@@ -1,0 +1,20 @@
+
+
+def create[F[_] : ContextShift](dbConfig: DbConfig)(implicit F: Async[F]): Resource[F, Transactor[F]] =
+    for {
+      ce <- ExecutionContexts.fixedThreadPool[F](32)
+      te <- ExecutionContexts.cachedThreadPool[F]
+      transactor <- HikariTransactor
+        .newHikariTransactor[F](dbConfig.driverClassName, dbConfig.url, dbConfig.user, dbConfig.pass, ce, te)
+    } yield transactor
+
+
+for {
+  _ <- logger.info("Starting application")
+   app <- create[F](config.db).use { xa =>
+     for {
+          service <- F.delay(Service[F](config, xa, clock))
+        } yield Application(config, service)
+      }
+    res <- app.service.insert() // тут запускается транзакция
+} yield res
