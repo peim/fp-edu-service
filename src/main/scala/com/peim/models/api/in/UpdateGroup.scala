@@ -1,5 +1,4 @@
-package com.peim.models.request
-
+package com.peim.models.api.in
 import com.peim.models.GroupType
 
 case class UpdateGroup(

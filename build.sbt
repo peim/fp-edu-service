@@ -29,7 +29,6 @@ lazy val root = (project in file(".")).settings(
   scalafmtOnCompile in ThisBuild := true,
   resolvers += Resolver.bintrayRepo("hseeberger", "maven"),
   libraryDependencies ++= Seq(
-    //      https://tpolecat.github.io/doobie/
     "com.typesafe.akka" %% "akka-http"           % akkaHttpVersion,
     "com.typesafe.akka" %% "akka-stream"         % akkaVersion,
     "de.heikoseeberger" %% "akka-http-circe"     % "1.22.0",

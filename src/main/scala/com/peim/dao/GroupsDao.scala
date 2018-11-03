@@ -1,6 +1,6 @@
 package com.peim.dao
 
-import com.peim.models.request.{CreateGroup, UpdateGroup}
+import com.peim.models.api.in.{CreateGroup, UpdateGroup}
 import com.peim.models.tables.GroupEntity
 import doobie.util.query.Query0
 import doobie.util.update.Update0

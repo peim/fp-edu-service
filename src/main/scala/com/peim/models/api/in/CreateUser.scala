@@ -1,4 +1,4 @@
-package com.peim.models.request
+package com.peim.models.api.in
 
 case class CreateUser(
     name: String,

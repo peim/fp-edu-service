@@ -1,7 +1,7 @@
 package com.peim.dao.impl
 
 import com.peim.dao.UsersDao
-import com.peim.models.request.{CreateUser, UpdateUser}
+import com.peim.models.api.in.{CreateUser, UpdateUser}
 import com.peim.models.tables.UserEntity
 import doobie.implicits._
 import doobie.util.query.Query0

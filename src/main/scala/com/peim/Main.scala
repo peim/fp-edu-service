@@ -26,7 +26,7 @@ object Main extends App {
 
     val httpPort: Int = config.getInt("http.port")
 
-    println("!!! " + DatabaseConfig.program.unsafeRunSync)
+//    println("!!! " + DatabaseConfig.program.unsafeRunSync)
 
     lazy val service = new ServiceApi()
     Http()

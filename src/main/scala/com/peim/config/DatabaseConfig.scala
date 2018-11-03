@@ -9,8 +9,8 @@ import doobie._
 import doobie.implicits._
 import doobie.hikari._
 import com.peim.dao.impl._
+import com.peim.models.api.in.{CreateEvent, CreateGroup, CreateUser}
 import com.peim.models.{Info, Payload, Public}
-import com.peim.models.request.{CreateEvent, CreateGroup, CreateUser}
 import doobie.util.Meta
 
 import scala.concurrent.ExecutionContext

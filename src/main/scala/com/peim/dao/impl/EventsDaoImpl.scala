@@ -4,7 +4,6 @@ import java.time.Instant
 import java.util.UUID
 
 import com.peim.dao.EventsDao
-import com.peim.models.request.CreateEvent
 import com.peim.models.tables.EventEntity
 import doobie.implicits._
 import doobie.util.Meta
@@ -12,6 +11,7 @@ import doobie.util.query.Query0
 import doobie.util.update.Update0
 import io.circe._
 import cats.syntax.either._
+import com.peim.models.api.in.CreateEvent
 import com.peim.models.{EventType, Payload}
 import io.circe.generic.auto._
 import io.circe.syntax._

@@ -1,6 +1,6 @@
 package com.peim.dao
 
-import com.peim.models.request.CreateEvent
+import com.peim.models.api.in.CreateEvent
 import com.peim.models.tables.EventEntity
 import doobie.util.query.Query0
 import doobie.util.update.Update0

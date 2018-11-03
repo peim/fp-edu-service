@@ -2,7 +2,7 @@ package com.peim.dao.impl
 
 import com.peim.dao.GroupsDao
 import com.peim.models.GroupType
-import com.peim.models.request.{CreateGroup, UpdateGroup}
+import com.peim.models.api.in.{CreateGroup, UpdateGroup}
 import com.peim.models.tables.GroupEntity
 import doobie.implicits._
 import doobie.util.Meta
