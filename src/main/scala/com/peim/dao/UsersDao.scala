@@ -13,6 +13,8 @@ trait UsersDao {
 
   def find(id: Int): Query0[UserEntity]
 
+  def findByGroup(groupId: Int): Query0[UserEntity]
+
   def list(skip: Int, take: Int): Query0[UserEntity]
 
 }

@@ -30,6 +30,9 @@ class UsersDaoImpl extends UsersDao {
   override def find(id: Int): Query0[UserEntity] =
     sql"select id, name, group_id, email, phone from users where id = $id".query
 
+  override def findByGroup(groupId: Int): Query0[UserEntity] =
+    sql"select id, name, group_id, email, phone from users where group_id = $groupId".query
+
   override def list(skip: Int, take: Int): Query0[UserEntity] =
     sql"select id, name, group_id, email, phone from users offset $skip limit $take".query
 

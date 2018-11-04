@@ -4,13 +4,11 @@ import akka.http.scaladsl.model.StatusCodes.NotFound
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.peim.models.api.in.{CreateUser, UpdateUser}
-import com.peim.models.tables.UserEntity
+import com.peim.services.UsersService
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.generic.auto._
 
-import scala.concurrent.Future
-
-class UsersApi() {
+class UsersApi(usersService: UsersService) {
 
   def routes: Route =
     pathPrefix("v1") {
@@ -19,7 +17,7 @@ class UsersApi() {
           parameters('id.as[Int]) { userId =>
             // GET /fp-edu/v1/users/get
             get {
-              onSuccess(findUser(userId)) {
+              onSuccess(usersService.findUser(userId)) {
                 case Some(user) => complete(user)
                 case None       => complete(NotFound)
               }
@@ -30,7 +28,7 @@ class UsersApi() {
             parameters('groupId.as[Int]) { groupId =>
               // GET /fp-edu/v1/users/getByGroup
               get {
-                onSuccess(findUsersByGroup(groupId)) { list =>
+                onSuccess(usersService.findUsersByGroup(groupId)) { list =>
                   complete(list)
                 }
               }
@@ -40,7 +38,7 @@ class UsersApi() {
             parameters('skip.as[Int].?, 'take.as[Int].?) { (skip, take) =>
               // GET /fp-edu/v1/users/list
               get {
-                onSuccess(listUsers(skip, take)) { list =>
+                onSuccess(usersService.listUsers(skip, take)) { list =>
                   complete(list)
                 }
               }
@@ -51,7 +49,7 @@ class UsersApi() {
               // POST /fp-edu/v1/users/create
               post {
                 entity(as[CreateUser]) { user =>
-                  onSuccess(createUser(user)) { response =>
+                  onSuccess(usersService.createUser(user)) { response =>
                     complete(response)
                   }
                 }
@@ -61,9 +59,9 @@ class UsersApi() {
           pathPrefix("update") {
             pathEndOrSingleSlash {
               // PUT /fp-edu/v1/users/update
-              post {
+              put {
                 entity(as[UpdateUser]) { user =>
-                  onSuccess(updateUser(user)) { response =>
+                  onSuccess(usersService.updateUser(user)) { response =>
                     complete(response)
                   }
                 }
@@ -72,11 +70,5 @@ class UsersApi() {
           }
       }
     }
-
-  private def findUser(userId: Int): Future[Option[UserEntity]]                              = ???
-  private def findUsersByGroup(groupId: Int): Future[Seq[UserEntity]]                        = ???
-  private def listUsers(takeOpt: Option[Int], skipOpt: Option[Int]): Future[Seq[UserEntity]] = ???
-  private def createUser(group: CreateUser): Future[Option[Int]]                             = ???
-  private def updateUser(group: UpdateUser): Future[Option[Int]]                             = ???
 
 }

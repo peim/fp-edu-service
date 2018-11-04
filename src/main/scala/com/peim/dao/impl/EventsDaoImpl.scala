@@ -38,8 +38,11 @@ class EventsDaoImpl extends EventsDao {
          |  values ($newId, ${event.payload}, ${event.userId}, ${event.`type`}, $created, ${event.source})""".stripMargin.update
   }
 
-  override def find(id: Int): Query0[EventEntity] =
+  override def find(id: UUID): Query0[EventEntity] =
     sql"select id, payload, user_id, type, created, source from events where id = $id".query
+
+  override def findByUser(userId: Int): Query0[EventEntity] =
+    sql"select id, payload, user_id, type, created, source from events where user_id = $userId".query
 
   override def list(skip: Int, take: Int): Query0[EventEntity] =
     sql"select id, payload, user_id, type, created, source from events offset $skip limit $take".query

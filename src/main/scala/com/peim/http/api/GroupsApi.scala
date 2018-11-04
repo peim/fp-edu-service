@@ -59,7 +59,7 @@ class GroupsApi(groupsService: GroupsService) {
           pathPrefix("update") {
             pathEndOrSingleSlash {
               // PUT /fp-edu/v1/groups/update
-              post {
+              put {
                 entity(as[UpdateGroup]) { group =>
                   onSuccess(groupsService.updateGroup(group)) { response =>
                     complete(response)

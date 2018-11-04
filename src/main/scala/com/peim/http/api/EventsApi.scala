@@ -6,13 +6,11 @@ import akka.http.scaladsl.model.StatusCodes.NotFound
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.peim.models.api.in.CreateEvent
-import com.peim.models.tables.EventEntity
+import com.peim.services.EventsService
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.generic.auto._
 
-import scala.concurrent.Future
-
-class EventsApi() {
+class EventsApi(eventsService: EventsService) {
 
   def routes: Route =
     pathPrefix("v1") {
@@ -21,7 +19,7 @@ class EventsApi() {
           parameters('id.as[String]) { eventId =>
             // GET /fp-edu/v1/events/get
             get {
-              onSuccess(findEvent(UUID.fromString(eventId))) {
+              onSuccess(eventsService.findEvent(UUID.fromString(eventId))) {
                 case Some(event) => complete(event)
                 case None        => complete(NotFound)
               }
@@ -32,7 +30,7 @@ class EventsApi() {
             parameters('userId.as[Int]) { userId =>
               // GET /fp-edu/v1/events/getByUser
               get {
-                onSuccess(findEventsByUser(userId)) { list =>
+                onSuccess(eventsService.findEventsByUser(userId)) { list =>
                   complete(list)
                 }
               }
@@ -42,7 +40,7 @@ class EventsApi() {
             parameters('skip.as[Int].?, 'take.as[Int].?) { (skip, take) =>
               // GET /fp-edu/v1/events/list
               get {
-                onSuccess(listEvents(skip, take)) { list =>
+                onSuccess(eventsService.listEvents(skip, take)) { list =>
                   complete(list)
                 }
               }
@@ -51,9 +49,9 @@ class EventsApi() {
           pathPrefix("create") {
             pathEndOrSingleSlash {
               // POST /fp-edu/v1/events/create
-              post {
+              put {
                 entity(as[CreateEvent]) { event =>
-                  onSuccess(createEvent(event)) { response =>
+                  onSuccess(eventsService.createEvent(event)) { response =>
                     complete(response)
                   }
                 }
@@ -62,10 +60,5 @@ class EventsApi() {
           }
       }
     }
-
-  private def findEvent(eventId: UUID): Future[Option[EventEntity]]                            = ???
-  private def findEventsByUser(userId: Int): Future[Seq[EventEntity]]                          = ???
-  private def listEvents(takeOpt: Option[Int], skipOpt: Option[Int]): Future[Seq[EventEntity]] = ???
-  private def createEvent(group: CreateEvent): Future[Option[UUID]]                            = ???
 
 }

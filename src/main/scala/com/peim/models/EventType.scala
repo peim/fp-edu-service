@@ -1,11 +1,16 @@
 package com.peim.models
 
+import io.circe.{Decoder, Encoder}
+
 sealed trait EventType
 case object Info    extends EventType
 case object Warning extends EventType
 case object Error   extends EventType
 
 object EventType {
+
+  implicit val incidentIdEncoder: Encoder[EventType] = Encoder.encodeString.contramap(toString)
+  implicit val incidentIdDecoder: Decoder[EventType] = Decoder.decodeString.map(fromString)
 
   def fromString(s: String): EventType =
     s match {
