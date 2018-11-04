@@ -1,35 +1,59 @@
-//import sbt._
-//
-//object Dependencies {
-//  val akkaV      = "2.4.16"
-//  val akkaHttpV  = "10.0.2"
-//  val circeV     = "0.7.0"
-//  val akkaCirceV = "1.12.0"
-//  val scalaTestV = "3.0.1"
-//  val logbackV   = "1.1.8"
-//  val configV    = "1.3.1"
-//  val timeV      = "2.16.0"
-//  val monixV     = "2.2.1"
-//
-//  lazy val projectResolvers = Seq.empty
-//  lazy val dependencies = testDependencies ++ rootDependencies
-//
-//
-//  lazy val testDependencies = Seq (
-//    "org.scalatest"          %% "scalatest"             % scalaTestV % Test,
-//    "com.typesafe.akka"      %% "akka-http-testkit"     % akkaHttpV  % Test
-//  )
-//
-//  lazy val rootDependencies = Seq(
-//    "com.typesafe.akka"      %% "akka-http"             % akkaHttpV,
-//    "de.heikoseeberger"      %% "akka-http-circe"       % akkaCirceV,
-//    "io.monix"               %% "monix"                 % monixV,
-//    "io.circe"               %% "circe-core"            % circeV,
-//    "io.circe"               %% "circe-generic"         % circeV,
-//    "io.circe"               %% "circe-jawn"            % circeV,
-//    "com.github.nscala-time" %% "nscala-time"           % timeV,
-//    "com.typesafe"            % "config"                % configV,
-//    "com.typesafe.akka"      %% "akka-slf4j"            % akkaV,
-//    "ch.qos.logback"          % "logback-classic"       % logbackV
-//  )
-//}
+import sbt._
+
+object Dependencies {
+
+  val akkaHttpVersion = "10.0.11"
+  val akkaVersion     = "2.5.11"
+  val doobieVersion   = "0.6.0"
+  val circeVersion    = "0.10.0"
+  val monixVersion    = "3.0.0-RC1"
+
+  lazy val projectResolvers = Seq(
+    Resolver.bintrayRepo("hseeberger", "maven")
+  )
+
+  lazy val dependencies = testDependencies ++ rootDependencies
+
+  lazy val rootDependencies = Seq(
+    "ch.qos.logback"    % "logback-classic"      % "1.2.3",
+    "com.typesafe.akka" %% "akka-http"           % akkaHttpVersion,
+    "com.typesafe.akka" %% "akka-stream"         % akkaVersion,
+    "com.typesafe.akka" %% "akka-slf4j"          % akkaVersion,
+    "de.heikoseeberger" %% "akka-http-circe"     % "1.22.0",
+    "io.monix"          %% "monix"               % monixVersion,
+    "io.circe"          %% "circe-core"          % circeVersion,
+    "io.circe"          %% "circe-generic"       % circeVersion,
+    "io.circe"          %% "circe-parser"        % circeVersion,
+    "org.tpolecat"      %% "doobie-core"         % doobieVersion,
+    "org.tpolecat"      %% "doobie-h2"           % doobieVersion,
+    "org.tpolecat"      %% "doobie-hikari"       % doobieVersion,
+    "org.tpolecat"      %% "doobie-postgres"     % doobieVersion,
+  )
+
+  lazy val testDependencies = Seq (
+    "com.typesafe.akka" %% "akka-http-testkit"   % akkaHttpVersion % Test,
+    "com.typesafe.akka" %% "akka-testkit"        % akkaVersion % Test,
+    "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
+    "org.tpolecat"      %% "doobie-specs2"       % doobieVersion % Test,
+    "org.tpolecat"      %% "doobie-scalatest"    % doobieVersion % Test,
+    "org.scalatest"     %% "scalatest"           % "3.0.1" % Test
+  )
+
+  lazy val compileSettings = Seq(
+    "-Ypartial-unification",
+    "-deprecation",
+    "-encoding",
+    "UTF-8",
+    "-feature",
+    "-language:existentials",
+    "-language:higherKinds",
+    "-language:implicitConversions",
+    "-unchecked",
+    "-Xlint",
+    "-Ywarn-dead-code",
+    "-Ywarn-numeric-widen",
+    "-Ywarn-value-discard",
+    "-Xfuture"
+  )
+
+}
