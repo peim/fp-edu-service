@@ -1,7 +1,8 @@
-package com.peim.api
+package com.peim.http
 
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
+import com.peim.http.api.{EventsApi, GroupsApi, UsersApi}
 
 class Service() {
 

@@ -4,8 +4,8 @@ import akka.actor.ActorSystem
 import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import com.peim.api.Service
 import com.peim.config.{AppConfig, DatabaseConfig}
+import com.peim.http.Service
 import com.typesafe.config.ConfigFactory
 
 import scala.util.{Failure, Success}

@@ -1,4 +1,4 @@
-package com.peim.api
+package com.peim.http.api
 
 import java.util.UUID
 

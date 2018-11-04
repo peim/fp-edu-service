@@ -1,4 +1,4 @@
-package com.peim.api
+package com.peim.http.api
 
 import akka.http.scaladsl.model.StatusCodes.NotFound
 import akka.http.scaladsl.server.Directives._
