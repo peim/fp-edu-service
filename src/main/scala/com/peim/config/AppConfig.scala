@@ -1,4 +1,5 @@
 package com.peim.config
+
 import com.typesafe.config.ConfigFactory
 
 class AppConfig {

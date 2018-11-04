@@ -4,13 +4,11 @@ import akka.http.scaladsl.model.StatusCodes.NotFound
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.peim.models.api.in.{CreateGroup, UpdateGroup}
-import com.peim.models.tables.GroupEntity
+import com.peim.services.GroupsService
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.generic.auto._
 
-import scala.concurrent.Future
-
-class GroupsApi() {
+class GroupsApi(groupsService: GroupsService) {
 
   def routes: Route =
     pathPrefix("v1") {
@@ -19,7 +17,7 @@ class GroupsApi() {
           parameters('id.as[Int]) { groupId =>
             // GET /fp-edu/v1/groups/get
             get {
-              onSuccess(findGroup(groupId)) {
+              onSuccess(groupsService.findGroup(groupId)) {
                 case Some(group) => complete(group)
                 case None        => complete(NotFound)
               }
@@ -28,19 +26,19 @@ class GroupsApi() {
         } ~
           pathPrefix("list") {
             parameters('skip.as[Int].?, 'take.as[Int].?) { (skip, take) =>
-              // GET /fp-edu/v1/groups/list
-              get {
-                onSuccess(listGroups(skip, take)) { list =>
-                  complete(list)
+                // GET /fp-edu/v1/groups/list
+                get {
+                  onSuccess(groupsService.listGroups(skip, take)) { list =>
+                    complete(list)
+                  }
                 }
-              }
             }
           } ~
           pathPrefix("hierarchy") {
             pathEndOrSingleSlash {
               // GET /fp-edu/v1/groups/hierarchy
               get {
-                onSuccess(groupsHierarchy) { hierarchy =>
+                onSuccess(groupsService.groupsHierarchy) { hierarchy =>
                   complete(hierarchy)
                 }
               }
@@ -51,7 +49,7 @@ class GroupsApi() {
               // POST /fp-edu/v1/groups/create
               post {
                 entity(as[CreateGroup]) { group =>
-                  onSuccess(createGroup(group)) { response =>
+                  onSuccess(groupsService.createGroup(group)) { response =>
                     complete(response)
                   }
                 }
@@ -63,7 +61,7 @@ class GroupsApi() {
               // PUT /fp-edu/v1/groups/update
               post {
                 entity(as[UpdateGroup]) { group =>
-                  onSuccess(updateGroup(group)) { response =>
+                  onSuccess(groupsService.updateGroup(group)) { response =>
                     complete(response)
                   }
                 }
@@ -72,11 +70,5 @@ class GroupsApi() {
           }
       }
     }
-
-  private def findGroup(groupId: Int): Future[Option[GroupEntity]]                             = ???
-  private def listGroups(takeOpt: Option[Int], skipOpt: Option[Int]): Future[Seq[GroupEntity]] = ???
-  private def groupsHierarchy: Future[Seq[GroupEntity]]                                        = ???
-  private def createGroup(group: CreateGroup): Future[Option[Int]]                             = ???
-  private def updateGroup(group: UpdateGroup): Future[Option[Int]]                             = ???
 
 }

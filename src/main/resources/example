@@ -1,5 +1,3 @@
-
-
 def create[F[_] : ContextShift](dbConfig: DbConfig)(implicit F: Async[F]): Resource[F, Transactor[F]] =
     for {
       ce <- ExecutionContexts.fixedThreadPool[F](32)
@@ -18,3 +16,25 @@ for {
       }
     res <- app.service.insert() // тут запускается транзакция
 } yield res
+
+
+
+ /*val program =
+    transactor.use { xa =>
+      val g = new GroupsDaoImpl
+      val u = new UsersDaoImpl
+      val e = new EventsDaoImpl
+
+      implicit val uuidMeta: Meta[UUID] = Meta[String].timap(e => UUID.fromString(e))(_.toString)
+
+      val newGroup = CreateGroup("test-group", Public, 0)
+      val query = for {
+        groupId <- g.create(newGroup).withUniqueGeneratedKeys[Int]("id")
+        newUser = CreateUser("test-user", groupId, s"user-$groupId@test.com", None)
+        userId <- u.create(newUser).withUniqueGeneratedKeys[Int]("id")
+        payload  = Payload("a", None, true, 1, Instant.now)
+        newEvent = CreateEvent(payload, userId, Info, None)
+        eventId <- e.create(newEvent).withUniqueGeneratedKeys[UUID]("id")
+      } yield (groupId, userId, eventId)
+      query.transact(xa)
+    }*/

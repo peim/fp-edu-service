@@ -4,9 +4,8 @@ import akka.actor.ActorSystem
 import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import com.peim.config.{AppConfig, DatabaseConfig}
+import com.peim.config.AppConfig
 import com.peim.http.Service
-import com.typesafe.config.ConfigFactory
 
 import scala.util.{Failure, Success}
 
@@ -18,14 +17,9 @@ object Main extends App {
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   implicit val executionContext                = system.dispatcher
 
-  private val config5 = ConfigFactory.load()
-
   val log = Logging(system.eventStream, config.systemName)
 
   try {
-
-    println("!!! " + DatabaseConfig.program.unsafeRunSync)
-
     lazy val service = new Service()
     Http()
       .bindAndHandle(service.routes, config.httpHost, config.httpPort)
