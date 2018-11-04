@@ -4,39 +4,37 @@ import akka.actor.ActorSystem
 import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import com.peim.api.ServiceApi
-import com.peim.config.DatabaseConfig
+import com.peim.api.Service
+import com.peim.config.{AppConfig, DatabaseConfig}
 import com.typesafe.config.ConfigFactory
 
 import scala.util.{Failure, Success}
 
 object Main extends App {
 
-  val systemName = "fp-edu-service"
+  val config = new AppConfig
 
-  implicit val system: ActorSystem             = ActorSystem(systemName)
+  implicit val system: ActorSystem             = ActorSystem(config.systemName)
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   implicit val executionContext                = system.dispatcher
 
-  val log = Logging(system.eventStream, systemName)
+  private val config5 = ConfigFactory.load()
+
+  val log = Logging(system.eventStream, config.systemName)
 
   try {
-    val config           = ConfigFactory.load()
-    val httpHost: String = config.getString("http.host")
 
-    val httpPort: Int = config.getInt("http.port")
+    println("!!! " + DatabaseConfig.program.unsafeRunSync)
 
-//    println("!!! " + DatabaseConfig.program.unsafeRunSync)
-
-    lazy val service = new ServiceApi()
+    lazy val service = new Service()
     Http()
-      .bindAndHandle(service.routes, httpHost, httpPort)
+      .bindAndHandle(service.routes, config.httpHost, config.httpPort)
       .map { binding =>
         log.info("REST interface bound to {}", binding.localAddress)
       } transform {
       case s @ Success(_) => s
       case Failure(cause) =>
-        log.error(cause, "REST interface could not bind to {}:{}", httpHost, httpPort)
+        log.error(cause, "REST interface could not bind to {}:{}", config.httpHost, config.httpPort)
         Failure(cause)
     }
   } catch {

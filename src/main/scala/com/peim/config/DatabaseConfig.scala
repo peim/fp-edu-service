@@ -21,17 +21,10 @@ object DatabaseConfig {
 
   val transactor: Resource[IO, HikariTransactor[IO]] =
     for {
-      awaitConnectionsEC <- ExecutionContexts.fixedThreadPool[IO](8)
-      executeQueriesEC   <- ExecutionContexts.cachedThreadPool[IO]
-      transactor <- HikariTransactor.newHikariTransactor[IO](
-        "org.postgresql.Driver",
-        "jdbc:postgresql://localhost:5432/edu_db",
-        "edu_user",
-        "edu_password",
-        awaitConnectionsEC,
-        executeQueriesEC
-      )
-    } yield transactor
+      connectEC <- ExecutionContexts.fixedThreadPool[IO](8)
+      transactEC   <- ExecutionContexts.cachedThreadPool[IO]
+    } yield HikariTransactor(DbConfig.dataSource, connectEC, transactEC)
+
 
   val program =
     transactor.use { xa =>
