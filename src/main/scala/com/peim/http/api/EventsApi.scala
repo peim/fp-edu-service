@@ -39,10 +39,10 @@ class EventsApi() {
             }
           } ~
           pathPrefix("list") {
-            parameters('take.as[Int].?, 'skip.as[Int].?) { (take, skip) =>
+            parameters('skip.as[Int].?, 'take.as[Int].?) { (skip, take) =>
               // GET /fp-edu/v1/events/list
               get {
-                onSuccess(listEvents(take, skip)) { list =>
+                onSuccess(listEvents(skip, take)) { list =>
                   complete(list)
                 }
               }

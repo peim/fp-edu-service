@@ -21,10 +21,9 @@ object DatabaseConfig {
 
   val transactor: Resource[IO, HikariTransactor[IO]] =
     for {
-      connectEC <- ExecutionContexts.fixedThreadPool[IO](8)
-      transactEC   <- ExecutionContexts.cachedThreadPool[IO]
+      connectEC  <- ExecutionContexts.fixedThreadPool[IO](8)
+      transactEC <- ExecutionContexts.cachedThreadPool[IO]
     } yield HikariTransactor(DbConfig.dataSource, connectEC, transactEC)
-
 
   val program =
     transactor.use { xa =>

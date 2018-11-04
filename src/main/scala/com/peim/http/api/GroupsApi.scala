@@ -27,10 +27,10 @@ class GroupsApi() {
           }
         } ~
           pathPrefix("list") {
-            parameters('take.as[Int].?, 'skip.as[Int].?) { (take, skip) =>
+            parameters('skip.as[Int].?, 'take.as[Int].?) { (skip, take) =>
               // GET /fp-edu/v1/groups/list
               get {
-                onSuccess(listGroups(take, skip)) { list =>
+                onSuccess(listGroups(skip, take)) { list =>
                   complete(list)
                 }
               }
@@ -75,7 +75,7 @@ class GroupsApi() {
 
   private def findGroup(groupId: Int): Future[Option[GroupEntity]]                             = ???
   private def listGroups(takeOpt: Option[Int], skipOpt: Option[Int]): Future[Seq[GroupEntity]] = ???
-  private def groupsHierarchy(): Future[Seq[GroupEntity]]                                      = ???
+  private def groupsHierarchy: Future[Seq[GroupEntity]]                                        = ???
   private def createGroup(group: CreateGroup): Future[Option[Int]]                             = ???
   private def updateGroup(group: UpdateGroup): Future[Option[Int]]                             = ???
 

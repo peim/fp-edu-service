@@ -37,10 +37,10 @@ class UsersApi() {
             }
           } ~
           pathPrefix("list") {
-            parameters('take.as[Int].?, 'skip.as[Int].?) { (take, skip) =>
+            parameters('skip.as[Int].?, 'take.as[Int].?) { (skip, take) =>
               // GET /fp-edu/v1/users/list
               get {
-                onSuccess(listUsers(take, skip)) { list =>
+                onSuccess(listUsers(skip, take)) { list =>
                   complete(list)
                 }
               }
