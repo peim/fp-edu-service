@@ -36,7 +36,7 @@ class GroupsService(groupsDao: GroupsDao, transactor: Resource[IO, HikariTransac
       .unsafeToFuture()
   }
 
-  def groupsHierarchy(): Future[Seq[GroupEntity]] = ???
+  def groupsHierarchy: Future[Seq[GroupEntity]] = ???
 
   def createGroup(group: CreateGroup): Future[Int] = {
     transactor

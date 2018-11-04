@@ -15,19 +15,20 @@ object Dependencies {
   lazy val dependencies = testDependencies ++ rootDependencies
 
   lazy val rootDependencies = Seq(
-    "ch.qos.logback"    % "logback-classic"      % "1.2.3",
-    "com.typesafe.akka" %% "akka-http"           % akkaHttpVersion,
-    "com.typesafe.akka" %% "akka-stream"         % akkaVersion,
-    "com.typesafe.akka" %% "akka-slf4j"          % akkaVersion,
-    "de.heikoseeberger" %% "akka-http-circe"     % "1.22.0",
-    "io.monix"          %% "monix"               % monixVersion,
-    "io.circe"          %% "circe-core"          % circeVersion,
-    "io.circe"          %% "circe-generic"       % circeVersion,
-    "io.circe"          %% "circe-parser"        % circeVersion,
-    "org.tpolecat"      %% "doobie-core"         % doobieVersion,
-    "org.tpolecat"      %% "doobie-h2"           % doobieVersion,
-    "org.tpolecat"      %% "doobie-hikari"       % doobieVersion,
-    "org.tpolecat"      %% "doobie-postgres"     % doobieVersion,
+    "ch.qos.logback"    % "logback-classic"       % "1.2.3",
+    "com.typesafe.akka" %% "akka-http"            % akkaHttpVersion,
+    "com.typesafe.akka" %% "akka-stream"          % akkaVersion,
+    "com.typesafe.akka" %% "akka-slf4j"           % akkaVersion,
+    "de.heikoseeberger" %% "akka-http-circe"      % "1.22.0",
+    "io.monix"          %% "monix"                % monixVersion,
+    "io.circe"          %% "circe-core"           % circeVersion,
+    "io.circe"          %% "circe-generic"        % circeVersion,
+    "io.circe"          %% "circe-parser"         % circeVersion,
+    "io.circe"          %% "circe-generic-extras" % circeVersion,
+    "org.tpolecat"      %% "doobie-core"          % doobieVersion,
+    "org.tpolecat"      %% "doobie-h2"            % doobieVersion,
+    "org.tpolecat"      %% "doobie-hikari"        % doobieVersion,
+    "org.tpolecat"      %% "doobie-postgres"      % doobieVersion,
   )
 
   lazy val testDependencies = Seq (

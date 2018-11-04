@@ -1,10 +1,15 @@
 package com.peim.models
 
+import io.circe.{Decoder, Encoder}
+
 sealed trait GroupType
 case object Public  extends GroupType
 case object Private extends GroupType
 
 object GroupType {
+
+  implicit val incidentIdEncoder: Encoder[GroupType] = Encoder.encodeString.contramap(toString)
+  implicit val incidentIdDecoder: Decoder[GroupType] = Decoder.decodeString.map(fromString)
 
   def fromString(s: String): GroupType =
     s match {

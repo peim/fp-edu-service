@@ -26,12 +26,12 @@ class GroupsApi(groupsService: GroupsService) {
         } ~
           pathPrefix("list") {
             parameters('skip.as[Int].?, 'take.as[Int].?) { (skip, take) =>
-                // GET /fp-edu/v1/groups/list
-                get {
-                  onSuccess(groupsService.listGroups(skip, take)) { list =>
-                    complete(list)
-                  }
+              // GET /fp-edu/v1/groups/list
+              get {
+                onSuccess(groupsService.listGroups(skip, take)) { list =>
+                  complete(list)
                 }
+              }
             }
           } ~
           pathPrefix("hierarchy") {
