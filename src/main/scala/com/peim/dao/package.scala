@@ -7,7 +7,7 @@ import com.peim.models.{EventType, GroupType, Payload}
 import doobie.util.Meta
 import io.circe.generic.auto._
 import io.circe.syntax._
-import io.circe.{Json, parser}
+import io.circe.{parser, Json}
 
 package object dao {
 
@@ -22,7 +22,7 @@ package object dao {
       parser.parse(jsonStr).leftMap[Json](err => throw err).merge.as[Payload] match {
         case Right(result) => result
         case Left(error)   => throw error
-      }
+    }
     val toString = (payload: Payload) => payload.asJson.toString
     Meta[String].timap[Payload](fromString)(toString)
   }

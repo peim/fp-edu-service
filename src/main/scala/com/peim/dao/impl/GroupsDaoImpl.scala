@@ -1,5 +1,6 @@
 package com.peim.dao.impl
 
+import com.peim.dao._
 import com.peim.dao.GroupsDao
 import com.peim.models.api.in.{CreateGroup, UpdateGroup}
 import com.peim.models.tables.GroupEntity
