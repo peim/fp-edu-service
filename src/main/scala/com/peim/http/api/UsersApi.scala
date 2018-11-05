@@ -13,63 +13,53 @@ class UsersApi(usersService: UsersService) {
   def routes: Route =
     pathPrefix("v1") {
       pathPrefix("users") {
-        pathPrefix("get") {
-          pathEnd {
-            parameters('id.as[Int]) { userId =>
-              // GET /fp-edu/v1/users/get
-              get {
-                onSuccess(usersService.findUser(userId)) {
-                  case Some(user) => complete(user)
-                  case None       => complete(NotFound)
-                }
+        path("get") {
+          parameters('id.as[Int]) { userId =>
+            // GET /fp-edu/v1/users/get
+            get {
+              onSuccess(usersService.findUser(userId)) {
+                case Some(user) => complete(user)
+                case None       => complete(NotFound)
               }
             }
           }
         } ~
-          pathPrefix("getByGroup") {
-            pathEnd {
-              parameters('groupId.as[Int]) { groupId =>
-                // GET /fp-edu/v1/users/getByGroup
-                get {
-                  onSuccess(usersService.findUsersByGroup(groupId)) { list =>
-                    complete(list)
-                  }
+          path("getByGroup") {
+            parameters('groupId.as[Int]) { groupId =>
+              // GET /fp-edu/v1/users/getByGroup
+              get {
+                onSuccess(usersService.findUsersByGroup(groupId)) { list =>
+                  complete(list)
                 }
               }
             }
           } ~
-          pathPrefix("list") {
-            pathEnd {
-              parameters('skip.as[Int].?, 'take.as[Int].?) { (skip, take) =>
-                // GET /fp-edu/v1/users/list
-                get {
-                  onSuccess(usersService.listUsers(skip, take)) { list =>
-                    complete(list)
-                  }
+          path("list") {
+            parameters('skip.as[Int].?, 'take.as[Int].?) { (skip, take) =>
+              // GET /fp-edu/v1/users/list
+              get {
+                onSuccess(usersService.listUsers(skip, take)) { list =>
+                  complete(list)
                 }
               }
             }
           } ~
-          pathPrefix("create") {
-            pathEndOrSingleSlash {
-              // POST /fp-edu/v1/users/create
-              post {
-                entity(as[CreateUser]) { user =>
-                  onSuccess(usersService.createUser(user)) { response =>
-                    complete(response)
-                  }
+          path("create") {
+            // POST /fp-edu/v1/users/create
+            post {
+              entity(as[CreateUser]) { user =>
+                onSuccess(usersService.createUser(user)) { response =>
+                  complete(response)
                 }
               }
             }
           } ~
-          pathPrefix("update") {
-            pathEndOrSingleSlash {
-              // PUT /fp-edu/v1/users/update
-              put {
-                entity(as[UpdateUser]) { user =>
-                  onSuccess(usersService.updateUser(user)) { response =>
-                    complete(response)
-                  }
+          path("update") {
+            // PUT /fp-edu/v1/users/update
+            put {
+              entity(as[UpdateUser]) { user =>
+                onSuccess(usersService.updateUser(user)) { response =>
+                  complete(response)
                 }
               }
             }
