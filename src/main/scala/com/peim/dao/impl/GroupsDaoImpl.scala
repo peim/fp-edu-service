@@ -1,17 +1,13 @@
 package com.peim.dao.impl
 
 import com.peim.dao.GroupsDao
-import com.peim.models.GroupType
 import com.peim.models.api.in.{CreateGroup, UpdateGroup}
 import com.peim.models.tables.GroupEntity
 import doobie.implicits._
-import doobie.util.Meta
 import doobie.util.query.Query0
 import doobie.util.update.Update0
 
 class GroupsDaoImpl extends GroupsDao {
-
-  implicit val eventTypeMeta: Meta[GroupType] = Meta[String].timap(GroupType.fromString)(GroupType.toString)
 
   override def create(group: CreateGroup): Update0 =
     sql"""insert into groups (name, type, parent_id)
