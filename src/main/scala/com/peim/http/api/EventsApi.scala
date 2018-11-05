@@ -16,32 +16,38 @@ class EventsApi(eventsService: EventsService) {
     pathPrefix("v1") {
       pathPrefix("events") {
         pathPrefix("get") {
-          parameters('id.as[String]) { eventId =>
-            // GET /fp-edu/v1/events/get
-            get {
-              onSuccess(eventsService.findEvent(UUID.fromString(eventId))) {
-                case Some(event) => complete(event)
-                case None        => complete(NotFound)
+          pathEnd {
+            parameters('id.as[String]) { eventId =>
+              // GET /fp-edu/v1/events/get
+              get {
+                onSuccess(eventsService.findEvent(UUID.fromString(eventId))) {
+                  case Some(event) => complete(event)
+                  case None        => complete(NotFound)
+                }
               }
             }
           }
         } ~
           pathPrefix("getByUser") {
-            parameters('userId.as[Int]) { userId =>
-              // GET /fp-edu/v1/events/getByUser
-              get {
-                onSuccess(eventsService.findEventsByUser(userId)) { list =>
-                  complete(list)
+            pathEnd {
+              parameters('userId.as[Int]) { userId =>
+                // GET /fp-edu/v1/events/getByUser
+                get {
+                  onSuccess(eventsService.findEventsByUser(userId)) { list =>
+                    complete(list)
+                  }
                 }
               }
             }
           } ~
           pathPrefix("list") {
-            parameters('skip.as[Int].?, 'take.as[Int].?) { (skip, take) =>
-              // GET /fp-edu/v1/events/list
-              get {
-                onSuccess(eventsService.listEvents(skip, take)) { list =>
-                  complete(list)
+            pathEnd {
+              parameters('skip.as[Int].?, 'take.as[Int].?) { (skip, take) =>
+                // GET /fp-edu/v1/events/list
+                get {
+                  onSuccess(eventsService.listEvents(skip, take)) { list =>
+                    complete(list)
+                  }
                 }
               }
             }

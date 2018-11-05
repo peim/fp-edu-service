@@ -14,32 +14,38 @@ class UsersApi(usersService: UsersService) {
     pathPrefix("v1") {
       pathPrefix("users") {
         pathPrefix("get") {
-          parameters('id.as[Int]) { userId =>
-            // GET /fp-edu/v1/users/get
-            get {
-              onSuccess(usersService.findUser(userId)) {
-                case Some(user) => complete(user)
-                case None       => complete(NotFound)
+          pathEnd {
+            parameters('id.as[Int]) { userId =>
+              // GET /fp-edu/v1/users/get
+              get {
+                onSuccess(usersService.findUser(userId)) {
+                  case Some(user) => complete(user)
+                  case None       => complete(NotFound)
+                }
               }
             }
           }
         } ~
           pathPrefix("getByGroup") {
-            parameters('groupId.as[Int]) { groupId =>
-              // GET /fp-edu/v1/users/getByGroup
-              get {
-                onSuccess(usersService.findUsersByGroup(groupId)) { list =>
-                  complete(list)
+            pathEnd {
+              parameters('groupId.as[Int]) { groupId =>
+                // GET /fp-edu/v1/users/getByGroup
+                get {
+                  onSuccess(usersService.findUsersByGroup(groupId)) { list =>
+                    complete(list)
+                  }
                 }
               }
             }
           } ~
           pathPrefix("list") {
-            parameters('skip.as[Int].?, 'take.as[Int].?) { (skip, take) =>
-              // GET /fp-edu/v1/users/list
-              get {
-                onSuccess(usersService.listUsers(skip, take)) { list =>
-                  complete(list)
+            pathEnd {
+              parameters('skip.as[Int].?, 'take.as[Int].?) { (skip, take) =>
+                // GET /fp-edu/v1/users/list
+                get {
+                  onSuccess(usersService.listUsers(skip, take)) { list =>
+                    complete(list)
+                  }
                 }
               }
             }

@@ -14,22 +14,26 @@ class GroupsApi(groupsService: GroupsService) {
     pathPrefix("v1") {
       pathPrefix("groups") {
         pathPrefix("get") {
-          parameters('id.as[Int]) { groupId =>
-            // GET /fp-edu/v1/groups/get
-            get {
-              onSuccess(groupsService.findGroup(groupId)) {
-                case Some(group) => complete(group)
-                case None        => complete(NotFound)
+          pathEnd {
+            parameters('id.as[Int]) { groupId =>
+              // GET /fp-edu/v1/groups/get
+              get {
+                onSuccess(groupsService.findGroup(groupId)) {
+                  case Some(group) => complete(group)
+                  case None        => complete(NotFound)
+                }
               }
             }
           }
         } ~
           pathPrefix("list") {
-            parameters('skip.as[Int].?, 'take.as[Int].?) { (skip, take) =>
-              // GET /fp-edu/v1/groups/list
-              get {
-                onSuccess(groupsService.listGroups(skip, take)) { list =>
-                  complete(list)
+            pathEnd {
+              parameters('skip.as[Int].?, 'take.as[Int].?) { (skip, take) =>
+                // GET /fp-edu/v1/groups/list
+                get {
+                  onSuccess(groupsService.listGroups(skip, take)) { list =>
+                    complete(list)
+                  }
                 }
               }
             }
