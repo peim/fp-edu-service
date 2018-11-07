@@ -7,7 +7,9 @@ import com.peim.dao.impl.{EventsDaoImpl, GroupsDaoImpl, UsersDaoImpl}
 import com.peim.http.api.{EventsApi, GroupsApi, UsersApi}
 import com.peim.services.{EventsService, GroupsService, UsersService}
 
-class Service() {
+import scala.concurrent.ExecutionContext
+
+class Service(implicit ec: ExecutionContext) {
 
   private val transactor = Database.transactor
   private val groupsApi  = new GroupsApi(new GroupsService(new GroupsDaoImpl, transactor))
