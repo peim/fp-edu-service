@@ -2,18 +2,16 @@ package com.peim.services
 
 import java.util.UUID
 
-import cats.effect.{IO, Resource}
+import cats.effect.{Async, Resource}
 import com.peim.dao._
 import com.peim.models.api.in.CreateEvent
 import com.peim.models.tables.EventEntity
 import doobie.hikari.HikariTransactor
 import doobie.implicits._
 
-import scala.concurrent.Future
+class EventsService[F[_]: Async](eventsDao: EventsDao, transactor: Resource[F, HikariTransactor[F]]) {
 
-class EventsService(eventsDao: EventsDao, transactor: Resource[IO, HikariTransactor[IO]]) {
-
-  def findEvent(eventId: UUID): Future[Option[EventEntity]] = {
+  def findEvent(eventId: UUID): F[Option[EventEntity]] = {
     transactor
       .use { xa =>
         eventsDao
@@ -21,10 +19,9 @@ class EventsService(eventsDao: EventsDao, transactor: Resource[IO, HikariTransac
           .option
           .transact(xa)
       }
-      .unsafeToFuture()
   }
 
-  def findEventsByUser(userId: Int): Future[Seq[EventEntity]] = {
+  def findEventsByUser(userId: Int): F[Seq[EventEntity]] = {
     transactor
       .use { xa =>
         eventsDao
@@ -32,10 +29,9 @@ class EventsService(eventsDao: EventsDao, transactor: Resource[IO, HikariTransac
           .to[Seq]
           .transact(xa)
       }
-      .unsafeToFuture()
   }
 
-  def listEvents(skipOpt: Option[Int], takeOpt: Option[Int]): Future[Seq[EventEntity]] = {
+  def listEvents(skipOpt: Option[Int], takeOpt: Option[Int]): F[Seq[EventEntity]] = {
     transactor
       .use { xa =>
         val skip = skipOpt.getOrElse(0)
@@ -45,10 +41,9 @@ class EventsService(eventsDao: EventsDao, transactor: Resource[IO, HikariTransac
           .to[Seq]
           .transact(xa)
       }
-      .unsafeToFuture()
   }
 
-  def createEvent(event: CreateEvent): Future[UUID] = {
+  def createEvent(event: CreateEvent): F[UUID] = {
     transactor
       .use { xa =>
         eventsDao
@@ -56,7 +51,6 @@ class EventsService(eventsDao: EventsDao, transactor: Resource[IO, HikariTransac
           .withUniqueGeneratedKeys[UUID]("id")
           .transact(xa)
       }
-      .unsafeToFuture()
   }
 
 }

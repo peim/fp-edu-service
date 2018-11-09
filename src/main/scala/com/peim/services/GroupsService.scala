@@ -1,17 +1,15 @@
 package com.peim.services
 
-import cats.effect.{IO, Resource}
+import cats.effect.{Async, Resource}
 import com.peim.dao.GroupsDao
 import com.peim.models.api.in.{CreateGroup, UpdateGroup}
 import com.peim.models.tables.GroupEntity
 import doobie.hikari.HikariTransactor
 import doobie.implicits._
 
-import scala.concurrent.Future
+class GroupsService[F[_]: Async](groupsDao: GroupsDao, transactor: Resource[F, HikariTransactor[F]]) {
 
-class GroupsService(groupsDao: GroupsDao, transactor: Resource[IO, HikariTransactor[IO]]) {
-
-  def findGroup(groupId: Int): Future[Option[GroupEntity]] = {
+  def findGroup(groupId: Int): F[Option[GroupEntity]] = {
     transactor
       .use { xa =>
         groupsDao
@@ -20,10 +18,9 @@ class GroupsService(groupsDao: GroupsDao, transactor: Resource[IO, HikariTransac
           .transact(xa)
 
       }
-      .unsafeToFuture()
   }
 
-  def listGroups(skipOpt: Option[Int], takeOpt: Option[Int]): Future[Seq[GroupEntity]] = {
+  def listGroups(skipOpt: Option[Int], takeOpt: Option[Int]): F[Seq[GroupEntity]] = {
     transactor
       .use { xa =>
         val skip = skipOpt.getOrElse(0)
@@ -33,12 +30,11 @@ class GroupsService(groupsDao: GroupsDao, transactor: Resource[IO, HikariTransac
           .to[Seq]
           .transact(xa)
       }
-      .unsafeToFuture()
   }
 
-  def groupsHierarchy: Future[Seq[GroupEntity]] = ???
+  def groupsHierarchy: F[Seq[GroupEntity]] = ???
 
-  def createGroup(group: CreateGroup): Future[Int] = {
+  def createGroup(group: CreateGroup): F[Int] = {
     transactor
       .use { xa =>
         groupsDao
@@ -46,10 +42,9 @@ class GroupsService(groupsDao: GroupsDao, transactor: Resource[IO, HikariTransac
           .withUniqueGeneratedKeys[Int]("id")
           .transact(xa)
       }
-      .unsafeToFuture()
   }
 
-  def updateGroup(group: UpdateGroup): Future[Int] = {
+  def updateGroup(group: UpdateGroup): F[Int] = {
     transactor
       .use { xa =>
         groupsDao
@@ -57,7 +52,6 @@ class GroupsService(groupsDao: GroupsDao, transactor: Resource[IO, HikariTransac
           .withUniqueGeneratedKeys[Int]("id")
           .transact(xa)
       }
-      .unsafeToFuture()
   }
 
 }

@@ -7,8 +7,10 @@ import com.peim.models.api.in.{CreateGroup, UpdateGroup}
 import com.peim.services.GroupsService
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.generic.auto._
+import monix.eval.Task
+import monix.execution.Scheduler
 
-class GroupsApi(groupsService: GroupsService) {
+class GroupsApi(groupsService: GroupsService[Task])(implicit s: Scheduler) {
 
   def routes: Route =
     pathPrefix("v1") {
@@ -17,7 +19,7 @@ class GroupsApi(groupsService: GroupsService) {
           parameters('id.as[Int]) { groupId =>
             // GET /fp-edu/v1/groups/get
             get {
-              onSuccess(groupsService.findGroup(groupId)) {
+              onSuccess(groupsService.findGroup(groupId).runAsync) {
                 case Some(group) => complete(group)
                 case None        => complete(NotFound)
               }
@@ -28,7 +30,7 @@ class GroupsApi(groupsService: GroupsService) {
             parameters('skip.as[Int].?, 'take.as[Int].?) { (skip, take) =>
               // GET /fp-edu/v1/groups/list
               get {
-                onSuccess(groupsService.listGroups(skip, take)) { list =>
+                onSuccess(groupsService.listGroups(skip, take).runAsync) { list =>
                   complete(list)
                 }
               }
@@ -37,7 +39,7 @@ class GroupsApi(groupsService: GroupsService) {
           path("hierarchy") {
             // GET /fp-edu/v1/groups/hierarchy
             get {
-              onSuccess(groupsService.groupsHierarchy) { hierarchy =>
+              onSuccess(groupsService.groupsHierarchy.runAsync) { hierarchy =>
                 complete(hierarchy)
               }
             }
@@ -46,7 +48,7 @@ class GroupsApi(groupsService: GroupsService) {
             // POST /fp-edu/v1/groups/create
             post {
               entity(as[CreateGroup]) { group =>
-                onSuccess(groupsService.createGroup(group)) { response =>
+                onSuccess(groupsService.createGroup(group).runAsync) { response =>
                   complete(response)
                 }
               }
@@ -56,7 +58,7 @@ class GroupsApi(groupsService: GroupsService) {
             // PUT /fp-edu/v1/groups/update
             put {
               entity(as[UpdateGroup]) { group =>
-                onSuccess(groupsService.updateGroup(group)) { response =>
+                onSuccess(groupsService.updateGroup(group).runAsync) { response =>
                   complete(response)
                 }
               }

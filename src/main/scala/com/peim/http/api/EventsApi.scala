@@ -9,8 +9,10 @@ import com.peim.models.api.in.CreateEvent
 import com.peim.services.EventsService
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.generic.auto._
+import monix.eval.Task
+import monix.execution.Scheduler
 
-class EventsApi(eventsService: EventsService) {
+class EventsApi(eventsService: EventsService[Task])(implicit s: Scheduler) {
 
   def routes: Route =
     pathPrefix("v1") {
@@ -19,7 +21,7 @@ class EventsApi(eventsService: EventsService) {
           parameters('id.as[String]) { eventId =>
             // GET /fp-edu/v1/events/get
             get {
-              onSuccess(eventsService.findEvent(UUID.fromString(eventId))) {
+              onSuccess(eventsService.findEvent(UUID.fromString(eventId)).runAsync) {
                 case Some(event) => complete(event)
                 case None        => complete(NotFound)
               }
@@ -30,7 +32,7 @@ class EventsApi(eventsService: EventsService) {
             parameters('userId.as[Int]) { userId =>
               // GET /fp-edu/v1/events/getByUser
               get {
-                onSuccess(eventsService.findEventsByUser(userId)) { list =>
+                onSuccess(eventsService.findEventsByUser(userId).runAsync) { list =>
                   complete(list)
                 }
               }
@@ -40,7 +42,7 @@ class EventsApi(eventsService: EventsService) {
             parameters('skip.as[Int].?, 'take.as[Int].?) { (skip, take) =>
               // GET /fp-edu/v1/events/list
               get {
-                onSuccess(eventsService.listEvents(skip, take)) { list =>
+                onSuccess(eventsService.listEvents(skip, take).runAsync) { list =>
                   complete(list)
                 }
               }
@@ -50,7 +52,7 @@ class EventsApi(eventsService: EventsService) {
             // POST /fp-edu/v1/events/create
             put {
               entity(as[CreateEvent]) { event =>
-                onSuccess(eventsService.createEvent(event)) { response =>
+                onSuccess(eventsService.createEvent(event).runAsync) { response =>
                   complete(response)
                 }
               }

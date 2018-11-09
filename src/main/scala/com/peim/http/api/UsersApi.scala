@@ -7,8 +7,10 @@ import com.peim.models.api.in.{CreateUser, UpdateUser}
 import com.peim.services.UsersService
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.generic.auto._
+import monix.eval.Task
+import monix.execution.Scheduler
 
-class UsersApi(usersService: UsersService) {
+class UsersApi(usersService: UsersService[Task])(implicit s: Scheduler) {
 
   def routes: Route =
     pathPrefix("v1") {
@@ -17,7 +19,7 @@ class UsersApi(usersService: UsersService) {
           parameters('id.as[Int]) { userId =>
             // GET /fp-edu/v1/users/get
             get {
-              onSuccess(usersService.findUser(userId)) {
+              onSuccess(usersService.findUser(userId).runAsync) {
                 case Some(user) => complete(user)
                 case None       => complete(NotFound)
               }
@@ -28,7 +30,7 @@ class UsersApi(usersService: UsersService) {
             parameters('groupId.as[Int]) { groupId =>
               // GET /fp-edu/v1/users/getByGroup
               get {
-                onSuccess(usersService.findUsersByGroup(groupId)) { list =>
+                onSuccess(usersService.findUsersByGroup(groupId).runAsync) { list =>
                   complete(list)
                 }
               }
@@ -38,7 +40,7 @@ class UsersApi(usersService: UsersService) {
             parameters('skip.as[Int].?, 'take.as[Int].?) { (skip, take) =>
               // GET /fp-edu/v1/users/list
               get {
-                onSuccess(usersService.listUsers(skip, take)) { list =>
+                onSuccess(usersService.listUsers(skip, take).runAsync) { list =>
                   complete(list)
                 }
               }
@@ -48,7 +50,7 @@ class UsersApi(usersService: UsersService) {
             // POST /fp-edu/v1/users/create
             post {
               entity(as[CreateUser]) { user =>
-                onSuccess(usersService.createUser(user)) { response =>
+                onSuccess(usersService.createUser(user).runAsync) { response =>
                   complete(response)
                 }
               }
@@ -58,7 +60,7 @@ class UsersApi(usersService: UsersService) {
             // PUT /fp-edu/v1/users/update
             put {
               entity(as[UpdateUser]) { user =>
-                onSuccess(usersService.updateUser(user)) { response =>
+                onSuccess(usersService.updateUser(user).runAsync) { response =>
                   complete(response)
                 }
               }

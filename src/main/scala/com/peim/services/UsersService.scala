@@ -1,17 +1,15 @@
 package com.peim.services
 
-import cats.effect.{IO, Resource}
+import cats.effect.{Async, Resource}
 import com.peim.dao.UsersDao
 import com.peim.models.api.in.{CreateUser, UpdateUser}
 import com.peim.models.tables.UserEntity
 import doobie.hikari.HikariTransactor
 import doobie.implicits._
 
-import scala.concurrent.Future
+class UsersService[F[_]: Async](usersDao: UsersDao, transactor: Resource[F, HikariTransactor[F]]) {
 
-class UsersService(usersDao: UsersDao, transactor: Resource[IO, HikariTransactor[IO]]) {
-
-  def findUser(userId: Int): Future[Option[UserEntity]] = {
+  def findUser(userId: Int): F[Option[UserEntity]] = {
     transactor
       .use { xa =>
         usersDao
@@ -20,10 +18,9 @@ class UsersService(usersDao: UsersDao, transactor: Resource[IO, HikariTransactor
           .transact(xa)
 
       }
-      .unsafeToFuture()
   }
 
-  def findUsersByGroup(groupId: Int): Future[Seq[UserEntity]] = {
+  def findUsersByGroup(groupId: Int): F[Seq[UserEntity]] = {
     transactor
       .use { xa =>
         usersDao
@@ -32,10 +29,9 @@ class UsersService(usersDao: UsersDao, transactor: Resource[IO, HikariTransactor
           .transact(xa)
 
       }
-      .unsafeToFuture()
   }
 
-  def listUsers(skipOpt: Option[Int], takeOpt: Option[Int]): Future[Seq[UserEntity]] = {
+  def listUsers(skipOpt: Option[Int], takeOpt: Option[Int]): F[Seq[UserEntity]] = {
     transactor
       .use { xa =>
         val skip = skipOpt.getOrElse(0)
@@ -45,10 +41,9 @@ class UsersService(usersDao: UsersDao, transactor: Resource[IO, HikariTransactor
           .to[Seq]
           .transact(xa)
       }
-      .unsafeToFuture()
   }
 
-  def createUser(user: CreateUser): Future[Int] = {
+  def createUser(user: CreateUser): F[Int] = {
     transactor
       .use { xa =>
         usersDao
@@ -56,10 +51,9 @@ class UsersService(usersDao: UsersDao, transactor: Resource[IO, HikariTransactor
           .withUniqueGeneratedKeys[Int]("id")
           .transact(xa)
       }
-      .unsafeToFuture()
   }
 
-  def updateUser(user: UpdateUser): Future[Int] = {
+  def updateUser(user: UpdateUser): F[Int] = {
     transactor
       .use { xa =>
         usersDao
@@ -67,7 +61,6 @@ class UsersService(usersDao: UsersDao, transactor: Resource[IO, HikariTransactor
           .withUniqueGeneratedKeys[Int]("id")
           .transact(xa)
       }
-      .unsafeToFuture()
   }
 
 }
