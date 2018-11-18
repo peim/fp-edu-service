@@ -6,7 +6,7 @@ object Dependencies {
   val akkaVersion     = "2.5.11"
   val doobieVersion   = "0.6.0"
   val circeVersion    = "0.10.0"
-  val monixVersion    = "3.0.0-RC1"
+  val monixVersion    = "3.0.0-RC2"
 
   lazy val projectResolvers = Seq(
     Resolver.bintrayRepo("hseeberger", "maven")

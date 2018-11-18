@@ -1,12 +1,10 @@
 package com.peim.config
 
-import com.typesafe.config.ConfigFactory
+import com.typesafe.config.Config
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 
-object DbConfig {
-
-  private val config = ConfigFactory.load()
+class DbConfig(config: Config) {
 
   private val driver: String          = config.getString("default.db.driver")
   private val url: String             = config.getString("default.db.url")

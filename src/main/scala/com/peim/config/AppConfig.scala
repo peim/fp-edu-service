@@ -11,4 +11,6 @@ class AppConfig {
   val httpHost: String = config.getString("http.host")
   val httpPort: Int    = config.getInt("http.port")
 
+  val dbConfig: DbConfig = new DbConfig(config)
+
 }

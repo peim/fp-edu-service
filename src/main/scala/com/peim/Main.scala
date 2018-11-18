@@ -3,38 +3,61 @@ package com.peim
 import akka.actor.ActorSystem
 import akka.event.Logging
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.marshalling.ToResponseMarshaller
+import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
+import cats.effect.{ContextShift, ExitCode}
 import com.peim.config.AppConfig
-import com.peim.http.Service
+import com.peim.http.{FutureConversion, Service}
+import monix.eval.{Task, TaskApp}
+import monix.execution.Scheduler
 
-import scala.util.{Failure, Success}
+import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration._
 
-object Main extends App {
+object Main extends TaskApp {
 
-  val config = new AppConfig
-
-  implicit val system: ActorSystem             = ActorSystem(config.systemName)
+  implicit val system: ActorSystem             = ActorSystem("fd-edu-system")
   implicit val materializer: ActorMaterializer = ActorMaterializer()
-  implicit val executionContext                = system.dispatcher
+  implicit val s: Scheduler                    = Scheduler(system.dispatcher)
 
-  val log = Logging(system.eventStream, config.systemName)
-
-  try {
-    lazy val service = new Service()
-    Http()
-      .bindAndHandle(service.routes, config.httpHost, config.httpPort)
-      .map { binding =>
-        log.info("REST interface bound to {}", binding.localAddress)
-      } transform {
-      case s @ Success(_) => s
-      case Failure(cause) =>
-        log.error(cause, "REST interface could not bind to {}:{}", config.httpHost, config.httpPort)
-        Failure(cause)
+  implicit val contextShift: ContextShift[Task] =
+    new ContextShift[Task] {
+      override def shift: Task[Unit] =
+        Task.shift(s)
+      override def evalOn[A](ec: ExecutionContext)(fa: Task[A]): Task[A] =
+        Task.shift(ec).bracket(_ => fa)(_ => Task.shift(s))
     }
-  } catch {
-    case e: Throwable =>
-      log.error(e, e.getMessage)
-      system.terminate()
+
+  implicit object taskToFuture extends FutureConversion[Task] {
+    override def toFuture[A: ToResponseMarshaller](a: Task[A]): Future[A] = a.runToFuture
+  }
+
+  override protected val scheduler: Scheduler = s
+
+  override def run(args: List[String]): Task[ExitCode] = {
+    val config  = new AppConfig
+    val log     = Logging(system.eventStream, config.systemName)
+    val service = new Service[Task](config)
+
+    def bindRoutes(routes: Route) =
+      Task
+        .deferFuture(Http().bindAndHandle(routes, config.httpHost, config.httpPort))
+        .attempt
+        .map {
+          case Right(_) =>
+            log.info("REST interface bound to {}:{}", config.httpHost, config.httpPort)
+            ExitCode.Success
+          case Left(cause) =>
+            log.error(cause, "REST interface could not bind to {}:{}", config.httpHost, config.httpPort)
+            ExitCode.Error
+        }
+
+    def terminateSystem(routes: Route) = Task.fromFuture {
+      system.terminate().flatMap(_ => Future.unit)
+    }
+
+    service.routes.bracket(bindRoutes)(terminateSystem)
   }
 
 }
