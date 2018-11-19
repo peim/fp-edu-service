@@ -13,7 +13,6 @@ import monix.eval.{Task, TaskApp}
 import monix.execution.Scheduler
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.duration._
 
 object Main extends TaskApp {
 
@@ -44,13 +43,13 @@ object Main extends TaskApp {
       Task
         .deferFuture(Http().bindAndHandle(routes, config.httpHost, config.httpPort))
         .attempt
-        .map {
+        .flatMap {
           case Right(_) =>
             log.info("REST interface bound to {}:{}", config.httpHost, config.httpPort)
-            ExitCode.Success
+            Task.never
           case Left(cause) =>
             log.error(cause, "REST interface could not bind to {}:{}", config.httpHost, config.httpPort)
-            ExitCode.Error
+            Task.eval(ExitCode.Error)
         }
 
     def terminateSystem(routes: Route) = Task.fromFuture {
