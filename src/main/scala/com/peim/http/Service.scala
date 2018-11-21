@@ -5,7 +5,7 @@ import akka.http.scaladsl.server.Route
 import cats.effect.{Async, ContextShift}
 import com.peim.config.AppConfig
 import com.peim.dao.impl.{EventsDaoImpl, GroupsDaoImpl, UsersDaoImpl}
-import com.peim.http.api.GroupsApi
+import com.peim.http.api.{EventsApi, GroupsApi, UsersApi}
 import com.peim.services.{EventsService, GroupsService, UsersService}
 
 class Service[F[_]: Async](config: AppConfig)(implicit cs: ContextShift[F], fc: FutureConversion[F]) {
@@ -15,12 +15,11 @@ class Service[F[_]: Async](config: AppConfig)(implicit cs: ContextShift[F], fc: 
       .createTransactor(config.dbConfig)
       .use { transactor =>
         val groupsApi = new GroupsApi[F](new GroupsService[F](new GroupsDaoImpl, transactor))
-        //        val eventsApi = new EventsApi(new EventsService[F](new EventsDaoImpl, transactor))
-        //        val usersApi  = new UsersApi(new UsersService[F](new UsersDaoImpl, transactor))
-
+        val eventsApi = new EventsApi[F](new EventsService[F](new EventsDaoImpl, transactor))
+        val usersApi  = new UsersApi[F](new UsersService[F](new UsersDaoImpl, transactor))
         Async[F].pure {
           pathPrefix("fp-edu") {
-            groupsApi.routes //~ eventsApi.routes ~ usersApi.routes
+            groupsApi.routes ~ eventsApi.routes ~ usersApi.routes
           }
         }
       }
