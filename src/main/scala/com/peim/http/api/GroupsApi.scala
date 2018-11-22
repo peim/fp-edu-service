@@ -38,10 +38,13 @@ class GroupsApi[F[_]: Async](groupsService: GroupsService[F])(implicit fc: Futur
             }
           } ~
           path("hierarchy") {
-            // GET /fp-edu/v1/groups/hierarchy
-            get {
-              onSuccess(fc.toFuture(groupsService.groupsHierarchy)) { hierarchy =>
-                complete(hierarchy)
+            parameter('rootId.as[Int].?) { rootId =>
+              // GET /fp-edu/v1/groups/hierarchy
+              get {
+                onSuccess(fc.toFuture(groupsService.groupsHierarchy(rootId))) {
+                  case Some(hierarchy) => complete(hierarchy)
+                  case None            => complete(NotFound)
+                }
               }
             }
           } ~

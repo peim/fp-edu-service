@@ -15,4 +15,6 @@ trait GroupsDao {
 
   def list(skip: Int, take: Int): Query0[GroupEntity]
 
+  def childrensRecursive(rootId: Int): Query0[GroupEntity]
+
 }

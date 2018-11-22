@@ -1,7 +1,9 @@
 package com.peim.services
 
 import cats.effect.Async
+import cats.implicits._
 import com.peim.dao.GroupsDao
+import com.peim.models.GroupsTree
 import com.peim.models.api.in.{CreateGroup, UpdateGroup}
 import com.peim.models.tables.GroupEntity
 import doobie.hikari.HikariTransactor
@@ -25,7 +27,14 @@ class GroupsService[F[_]: Async](groupsDao: GroupsDao, transactor: HikariTransac
       .transact(transactor)
   }
 
-  def groupsHierarchy: F[Seq[GroupEntity]] = ???
+  def groupsHierarchy(rootIdOpt: Option[Int]): F[Option[GroupsTree]] = {
+    val rootId = rootIdOpt.getOrElse(1)
+    groupsDao
+      .childrensRecursive(rootId)
+      .to[Seq]
+      .transact(transactor)
+      .map(buildGroupTree(rootId))
+  }
 
   def createGroup(group: CreateGroup): F[Int] = {
     groupsDao
@@ -39,6 +48,15 @@ class GroupsService[F[_]: Async](groupsDao: GroupsDao, transactor: HikariTransac
       .update(group)
       .withUniqueGeneratedKeys[Int]("id")
       .transact(transactor)
+  }
+
+  def buildGroupTree(rootId: Int)(groups: Seq[GroupEntity]): Option[GroupsTree] = {
+
+    def loop(root: GroupEntity): GroupsTree = {
+      GroupsTree(root.id, root.name, root.`type`, root.parentId, groups.filter(_.parentId == root.id).map(loop))
+    }
+
+    groups.find(_.id == rootId).map(loop)
   }
 
 }

@@ -33,4 +33,23 @@ class GroupsDaoImpl extends GroupsDao {
   override def list(skip: Int, take: Int): Query0[GroupEntity] =
     sql"select id, name, type, parent_id from groups offset $skip limit $take".query
 
+  override def childrensRecursive(rootId: Int): Query0[GroupEntity] = {
+    sql"""
+        with recursive prev as (
+          select id, name, type, parent_id
+          from groups
+          where id = $rootId
+
+          union all
+
+          select curr.id, curr.name, curr.type, curr.parent_id
+          from groups as curr
+            join prev
+              on prev.id = curr.parent_id
+        )
+
+        select id, name, type, parent_id from prev
+        """.query
+  }
+
 }
