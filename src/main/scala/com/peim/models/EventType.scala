@@ -9,8 +9,8 @@ case object Error   extends EventType
 
 object EventType {
 
-  implicit val incidentIdEncoder: Encoder[EventType] = Encoder.encodeString.contramap(toString)
-  implicit val incidentIdDecoder: Decoder[EventType] = Decoder.decodeString.map(fromString)
+  implicit val eventTypeEncoder: Encoder[EventType] = Encoder.encodeString.contramap(toString)
+  implicit val eventTypeDecoder: Decoder[EventType] = Decoder.decodeString.map(fromString)
 
   def fromString(s: String): EventType =
     s match {

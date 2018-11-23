@@ -8,8 +8,8 @@ case object Private extends GroupType
 
 object GroupType {
 
-  implicit val incidentIdEncoder: Encoder[GroupType] = Encoder.encodeString.contramap(toString)
-  implicit val incidentIdDecoder: Decoder[GroupType] = Decoder.decodeString.map(fromString)
+  implicit val groupTypeEncoder: Encoder[GroupType] = Encoder.encodeString.contramap(toString)
+  implicit val groupTypeDecoder: Decoder[GroupType] = Decoder.decodeString.map(fromString)
 
   def fromString(s: String): GroupType =
     s match {
