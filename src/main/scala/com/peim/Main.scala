@@ -8,8 +8,8 @@ import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
 import cats.effect.{ContextShift, ExitCode}
 import com.peim.config.AppConfig
-import com.peim.http.{Service, ToFutureConversion}
-import com.peim.utils.{FromFutureConversion, FutureConversion, ToFutureConversion}
+import com.peim.http.Service
+import com.peim.utils.FutureConversion
 import monix.eval.{Task, TaskApp}
 import monix.execution.Scheduler
 
@@ -33,7 +33,7 @@ object Main extends TaskApp {
 
   implicit object taskFutureConversion extends FutureConversion[Task] {
     override def toFuture[A: ToResponseMarshaller](a: Task[A]): Future[A] = a.runToFuture
-    override def fromFuture[A](a: Future[A]): Task[A] = Task.deferFuture(a)
+    override def fromFuture[A](a: Future[A]): Task[A]                     = Task.deferFuture(a)
   }
 
   override protected val scheduler: Scheduler = s

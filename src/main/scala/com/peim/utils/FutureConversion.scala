@@ -4,7 +4,6 @@ import akka.http.scaladsl.marshalling.ToResponseMarshaller
 
 import scala.concurrent.Future
 
-
 trait FromFutureConversion[F[_]] {
 
   def fromFuture[A](a: Future[A]): F[A]
