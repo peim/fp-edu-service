@@ -9,9 +9,9 @@ import com.peim.services.GroupsService
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.generic.auto._
 import cats.effect._
-import com.peim.http.FutureConversion
+import com.peim.http.ToFutureConversion
 
-class GroupsApi[F[_]: Async](groupsService: GroupsService[F])(implicit fc: FutureConversion[F]) {
+class GroupsApi[F[_]: Async](groupsService: GroupsService[F])(implicit tfc: ToFutureConversion[F]) {
 
   def routes: Route =
     pathPrefix("v1") {
@@ -20,7 +20,7 @@ class GroupsApi[F[_]: Async](groupsService: GroupsService[F])(implicit fc: Futur
           parameters('id.as[Int]) { groupId =>
             // GET /fp-edu/v1/groups/get
             get {
-              onSuccess(fc.toFuture(groupsService.findGroup(groupId))) {
+              onSuccess(tfc.toFuture(groupsService.findGroup(groupId))) {
                 case Some(group) => complete(group)
                 case None        => complete(NotFound)
               }
@@ -31,7 +31,7 @@ class GroupsApi[F[_]: Async](groupsService: GroupsService[F])(implicit fc: Futur
             parameters('skip.as[Int].?, 'take.as[Int].?) { (skip, take) =>
               // GET /fp-edu/v1/groups/list
               get {
-                onSuccess(fc.toFuture(groupsService.listGroups(skip, take))) { list =>
+                onSuccess(tfc.toFuture(groupsService.listGroups(skip, take))) { list =>
                   complete(list)
                 }
               }
@@ -41,7 +41,7 @@ class GroupsApi[F[_]: Async](groupsService: GroupsService[F])(implicit fc: Futur
             parameter('rootId.as[Int].?) { rootId =>
               // GET /fp-edu/v1/groups/hierarchy
               get {
-                onSuccess(fc.toFuture(groupsService.groupsHierarchy(rootId))) {
+                onSuccess(tfc.toFuture(groupsService.groupsHierarchy(rootId))) {
                   case Some(hierarchy) => complete(hierarchy)
                   case None            => complete(NotFound)
                 }
@@ -52,7 +52,7 @@ class GroupsApi[F[_]: Async](groupsService: GroupsService[F])(implicit fc: Futur
             // POST /fp-edu/v1/groups/create
             post {
               entity(as[CreateGroup]) { group =>
-                onSuccess(fc.toFuture(groupsService.createGroup(group))) { response =>
+                onSuccess(tfc.toFuture(groupsService.createGroup(group))) { response =>
                   complete(response)
                 }
               }
@@ -62,7 +62,7 @@ class GroupsApi[F[_]: Async](groupsService: GroupsService[F])(implicit fc: Futur
             // PUT /fp-edu/v1/groups/update
             put {
               entity(as[UpdateGroup]) { group =>
-                onSuccess(fc.toFuture(groupsService.updateGroup(group))) { response =>
+                onSuccess(tfc.toFuture(groupsService.updateGroup(group))) { response =>
                   complete(response)
                 }
               }
