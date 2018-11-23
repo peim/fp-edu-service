@@ -4,9 +4,9 @@ import akka.http.scaladsl.model.StatusCodes.NotFound
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import cats.effect.Async
-import com.peim.http.ToFutureConversion
 import com.peim.models.api.in.{CreateUser, UpdateUser}
 import com.peim.services.UsersService
+import com.peim.utils.ToFutureConversion
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.generic.auto._
 

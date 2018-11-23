@@ -1,10 +1,9 @@
-package com.peim.http
+package com.peim.utils
 
-import cats.effect._
-import cats.implicits._
+import cats.effect.{Async, ContextShift, Resource}
 import com.peim.config.DbConfig
-import doobie.ExecutionContexts
 import doobie.hikari.HikariTransactor
+import doobie.util.ExecutionContexts
 
 object Database {
 

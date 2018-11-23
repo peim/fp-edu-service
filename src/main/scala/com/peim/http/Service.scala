@@ -10,10 +10,10 @@ import com.peim.dao.impl.{EventsDaoImpl, GroupsDaoImpl, UsersDaoImpl}
 import com.peim.http.api.{EventsApi, GroupsApi, UsersApi}
 import com.peim.http.clients.impl.SomeClientImpl
 import com.peim.services.{EventsService, GroupsService, UsersService}
+import com.peim.utils.{Database, FutureConversion}
 
 class Service[F[_]: Async](config: AppConfig)(implicit cs: ContextShift[F],
-                                              tfc: ToFutureConversion[F],
-                                              ffc: FromFutureConversion[F],
+                                              fc: FutureConversion[F],
                                               system: ActorSystem,
                                               materializer: ActorMaterializer) {
 

@@ -7,7 +7,7 @@ import cats.effect.Async
 import cats.implicits._
 import com.peim.errors.ServiceError
 import com.peim.errors.WebServiceErrors._
-import com.peim.http.FromFutureConversion
+import com.peim.utils.FromFutureConversion
 import io.circe._
 import io.circe.parser._
 

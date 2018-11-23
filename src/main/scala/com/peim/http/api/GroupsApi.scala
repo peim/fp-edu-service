@@ -9,7 +9,7 @@ import com.peim.services.GroupsService
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.generic.auto._
 import cats.effect._
-import com.peim.http.ToFutureConversion
+import com.peim.utils.ToFutureConversion
 
 class GroupsApi[F[_]: Async](groupsService: GroupsService[F])(implicit tfc: ToFutureConversion[F]) {
 
