@@ -2,14 +2,14 @@ package com.peim.services
 
 import java.util.UUID
 
-import cats.effect.Async
+import cats.effect.Sync
 import com.peim.dao._
 import com.peim.models.api.in.CreateEvent
 import com.peim.models.tables.EventEntity
 import doobie.hikari.HikariTransactor
 import doobie.implicits._
 
-class EventsService[F[_]: Async](eventsDao: EventsDao, transactor: HikariTransactor[F]) {
+class EventsService[F[_]: Sync](eventsDao: EventsDao, transactor: HikariTransactor[F]) {
 
   def findEvent(eventId: UUID): F[Option[EventEntity]] = {
     eventsDao

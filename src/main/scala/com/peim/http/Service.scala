@@ -31,7 +31,7 @@ class Service[F[_]: Async](config: AppConfig)(implicit cs: ContextShift[F],
 
         val usersService = new UsersService[F](new UsersDaoImpl, transactor)
         val usersApi     = new UsersApi[F](usersService)
-        Async[F].pure {
+        Async[F].delay {
           pathPrefix("fp-edu") {
             groupsApi.routes ~ eventsApi.routes ~ usersApi.routes
           }

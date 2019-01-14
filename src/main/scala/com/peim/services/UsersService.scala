@@ -1,13 +1,13 @@
 package com.peim.services
 
-import cats.effect.Async
+import cats.effect.Sync
 import com.peim.dao.UsersDao
 import com.peim.models.api.in.{CreateUser, UpdateUser}
 import com.peim.models.tables.UserEntity
 import doobie.hikari.HikariTransactor
 import doobie.implicits._
 
-class UsersService[F[_]: Async](usersDao: UsersDao, transactor: HikariTransactor[F]) {
+class UsersService[F[_]: Sync](usersDao: UsersDao, transactor: HikariTransactor[F]) {
 
   def findUser(userId: Int): F[Option[UserEntity]] = {
     usersDao

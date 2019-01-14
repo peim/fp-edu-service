@@ -1,6 +1,6 @@
 package com.peim.services
 
-import cats.effect.Async
+import cats.effect.Sync
 import cats.implicits._
 import com.peim.dao.GroupsDao
 import com.peim.http.clients.SomeClient
@@ -10,7 +10,7 @@ import com.peim.models.tables.GroupEntity
 import doobie.hikari.HikariTransactor
 import doobie.implicits._
 
-class GroupsService[F[_]: Async](groupsDao: GroupsDao, someClient: SomeClient[F], transactor: HikariTransactor[F]) {
+class GroupsService[F[_]: Sync](groupsDao: GroupsDao, someClient: SomeClient[F], transactor: HikariTransactor[F]) {
 
   def findGroup(groupId: Int): F[Option[GroupEntity]] = {
     groupsDao

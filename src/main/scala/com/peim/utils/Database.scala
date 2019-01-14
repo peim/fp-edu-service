@@ -1,6 +1,6 @@
 package com.peim.utils
 
-import cats.effect._
+import cats.effect.{Async, ContextShift, Resource}
 import cats.implicits._
 import com.peim.config.DbConfig
 import doobie.hikari.HikariTransactor

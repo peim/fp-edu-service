@@ -26,9 +26,7 @@ object Main extends TaskApp {
       override def shift: Task[Unit] =
         Task.shift(s)
       override def evalOn[A](ec: ExecutionContext)(fa: Task[A]): Task[A] =
-        // !!!!!
         Task.shift(ExecutionContext.Implicits.global).bracket(_ => fa)(_ => Task.shift(s))
-      // !!!!!
     }
 
   implicit object taskFutureConversion extends FutureConversion[Task] {

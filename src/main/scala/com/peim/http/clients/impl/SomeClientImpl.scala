@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpMethod, HttpRequest}
 import akka.stream.ActorMaterializer
-import cats.effect.Async
+import cats.effect.Sync
 import cats.implicits._
 import com.peim.errors.ServiceError
 import com.peim.http.clients.{HttpClient, SomeClient}
@@ -12,9 +12,9 @@ import com.peim.models.GroupsTree
 import com.peim.utils.FromFutureConversion
 import io.circe.generic.auto._
 
-class SomeClientImpl[F[_]: Async](implicit ffc: FromFutureConversion[F],
-                                  system: ActorSystem,
-                                  materializer: ActorMaterializer)
+class SomeClientImpl[F[_]: Sync](implicit ffc: FromFutureConversion[F],
+                                 system: ActorSystem,
+                                 materializer: ActorMaterializer)
     extends HttpClient[F]
     with SomeClient[F] {
 

@@ -3,7 +3,7 @@ package com.peim.http.api
 import akka.http.scaladsl.model.StatusCodes.NotFound
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import cats.effect.Async
+import cats.effect.Sync
 import com.peim.models.api.in.{CreateGroup, UpdateGroup}
 import com.peim.services.GroupsService
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
@@ -11,7 +11,7 @@ import io.circe.generic.auto._
 import cats.effect._
 import com.peim.utils.ToFutureConversion
 
-class GroupsApi[F[_]: Async](groupsService: GroupsService[F])(implicit tfc: ToFutureConversion[F]) {
+class GroupsApi[F[_]: Sync](groupsService: GroupsService[F])(implicit tfc: ToFutureConversion[F]) {
 
   def routes: Route =
     pathPrefix("v1") {
