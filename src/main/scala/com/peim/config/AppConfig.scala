@@ -1,16 +1,20 @@
 package com.peim.config
 
-import com.typesafe.config.ConfigFactory
+import pureconfig.{ConfigReader, ConfigSource}
+import pureconfig.generic.semiauto.deriveReader
+import zio._
 
-class AppConfig {
+final case class AppConfig(httpConfig: HttpServerConfig, dbConfig: DbConfig)
 
-  private val config = ConfigFactory.load()
+object AppConfig {
 
-  val systemName: String = "fp-edu-service"
+  implicit val configReader: ConfigReader[AppConfig] = deriveReader
 
-  val httpHost: String = config.getString("http.host")
-  val httpPort: Int    = config.getInt("http.port")
+  private val source = ConfigSource.default.at("app")
 
-  val dbConfig: DbConfig = new DbConfig(config)
-
+  def layer: ULayer[AppConfig] = ZLayer.fromZIO(
+    ZIO
+      .attempt(source.loadOrThrow[AppConfig])
+      .orDie
+  )
 }
