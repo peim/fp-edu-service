@@ -13,58 +13,38 @@ import sttp.tapir.ztapir.ZServerEndpoint
 
 object EventsRoutes {
 
-  import sttp.tapir.EndpointIO.annotations ._
+  case class Paging(take: Int, skip: Int)
+  object Paging {
+    def of(takeOpt: Option[Int], skipOpt: Option[Int]): Paging =
+      Paging(takeOpt.getOrElse(25), skipOpt.getOrElse(0))
+  }
 
-  @endpointInput("?id=")
-  case class EventId(
-                   @path
-                   id: String
-                 )
-
-  @endpointInput("?id=")
-  case class UserId(
-                      @path
-                      id: Int
-                    )
-
-  @endpointInput("?take=")
-  case class Take(
-                     @path
-                     take: Int
-                   )
-
-  @endpointInput("?skip=")
-  case class Skip(
-                   @path
-                   skip: Int
-                 )
-
-  private val eventIdParam: EndpointInput[EventId] = path[String]("id").mapTo[EventId]
-  private val userIdParam: EndpointInput[UserId] = path[Int]("id").mapTo[UserId]
-  private val takeParam: EndpointInput[Take] = path[Int]("take").mapTo[Take]
-  private val skipParam: EndpointInput[Skip] = path[Int]("skip").mapTo[Skip]
+  private val eventIdParam = query[String]("id")
+  private val userIdParam = query[Int]("id")
+  private val paging: EndpointInput[Paging] =
+    query[Option[Int]]("take").and(query[Option[Int]]("skip"))
+      .map(input => Paging.of(input._1, input._2))(paging => (Some(paging.take), Some(paging.skip)))
 
   private val getEventByIdEndpoint = endpoint.get
     .in("events" / "get")
     .in(eventIdParam)
     .out(jsonBody[EventEntity])
     .errorOut(jsonBody[ServiceError])
-    .zServerLogic(id => EventsService.findEvent(id.id).mapError(err => ServiceErrors.internalError(err.getMessage)))
+    .zServerLogic(id => EventsService.findEvent(id).mapError(err => ServiceErrors.internalError(err.getMessage)))
 
   private val getEventsByUserEndpoint = endpoint.get
     .in("events" / "getByUser")
     .in(userIdParam)
     .out(jsonBody[List[EventEntity]])
     .errorOut(jsonBody[ServiceError])
-    .zServerLogic(userId => EventsService.findEventByUser(userId.id).mapError(err => ServiceErrors.internalError(err.getMessage)))
+    .zServerLogic(userId => EventsService.findEventByUser(userId).mapError(err => ServiceErrors.internalError(err.getMessage)))
 
   private val listEventsEndpoint = endpoint.get
     .in("events" / "list")
-    .in(takeParam)
-    .in(skipParam)
+    .in(paging)
     .out(jsonBody[List[EventEntity]])
     .errorOut(jsonBody[ServiceError])
-    .zServerLogic(params => EventsService.listEvents(params._1.take, params._2.skip).mapError(err => ServiceErrors.internalError(err.getMessage)))
+    .zServerLogic(paging => EventsService.listEvents(paging.take, paging.skip).mapError(err => ServiceErrors.internalError(err.getMessage)))
 
   private val createEventEndpoint = endpoint.post
     .in("events" / "create")
@@ -79,13 +59,4 @@ object EventsRoutes {
     listEventsEndpoint,
     createEventEndpoint
   )
-
-//  val routes =
-//    ZHttp4sServerInterpreter()
-//      .from(
-//        endpoints
-//      )
-//      .toRoutes
-
-
 }
