@@ -6,13 +6,13 @@ import zio._
 
 final case class AppConfig(httpConfig: HttpServerConfig, dbConfig: DbConfig)
 
-object AppConfig {
+object AppConfig extends zio.Accessible[AppConfig] {
 
   implicit val configReader: ConfigReader[AppConfig] = deriveReader
 
   private val source = ConfigSource.default.at("app")
 
-  def layer: ULayer[AppConfig] = ZLayer.fromZIO(
+  val live: ULayer[AppConfig] = ZLayer.fromZIO(
     ZIO
       .attempt(source.loadOrThrow[AppConfig])
       .orDie

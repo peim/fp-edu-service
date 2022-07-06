@@ -1,29 +1,28 @@
 package com.peim.errors
 
+import cats.syntax.either._
 import io.circe.{Decoder, Encoder}
+import sttp.tapir.{Schema, SchemaType}
 
 sealed trait ErrorCode
-case object BadRequestCode    extends ErrorCode
-case object NotFoundCode      extends ErrorCode
-case object InternalErrorCode extends ErrorCode
 
 object ErrorCode {
+  case object BadRequestCode    extends ErrorCode
+  case object InternalErrorCode extends ErrorCode
 
-  implicit val errorCodeEncoder: Encoder[ErrorCode] = Encoder.encodeString.contramap(toString)
-  implicit val errorCodeDecoder: Decoder[ErrorCode] = Decoder.decodeString.map(fromString)
+  implicit val schema: Schema[ErrorCode]   = Schema(SchemaType.SString[ErrorCode]())
+  implicit val encoder: Encoder[ErrorCode] = Encoder.encodeString.contramap(ErrorCode.toString)
+  implicit val decoder: Decoder[ErrorCode] = Decoder.decodeString.emap(ErrorCode.fromString)
 
-  def fromString(s: String): ErrorCode =
+  def fromString(s: String): Either[String, ErrorCode] =
     s match {
-      case "badRequest"          => BadRequestCode
-      case "notFound"            => NotFoundCode
-      case "internalServerError" => InternalErrorCode
-      case other                 => throw new RuntimeException(s"unexpected group type $other")
+      case "badRequest"          => BadRequestCode.asRight
+      case "internalServerError" => InternalErrorCode.asRight
+      case other                 => s"unexpected group type $other".asLeft
     }
 
   def toString(code: ErrorCode): String = code match {
     case BadRequestCode    => "badRequest"
-    case NotFoundCode      => "notFound"
     case InternalErrorCode => "internalServerError"
   }
-
 }
