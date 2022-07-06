@@ -36,7 +36,7 @@ object Main extends ZIOApp {
         .from(
           SwaggerInterpreter().fromServerEndpoints(
             EventsRoutes.endpoints,
-            "Monarch",
+            "ZIO demo",
             "0.1.0"
           )
         )
@@ -52,7 +52,7 @@ object Main extends ZIOApp {
 
       server <- EmberServerBuilder.default[RIO[AppEnv, *]]
         .withHost(ipv4"0.0.0.0")
-        .withPort(port"8081")
+        .withPort(port"8080")
         .withHttpApp(httpApp)
         .build
         .use(_ => ZIO.never)
