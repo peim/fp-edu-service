@@ -1,13 +1,12 @@
 package com.peim.models.tables
 
 import java.time.Instant
-import java.util.UUID
 import com.peim.models.{EventType, Payload}
 import io.circe.Codec
 import io.circe.generic.semiauto.deriveCodec
 
 final case class EventEntity(
-    id: UUID,
+    id: String,
     payload: Payload,
     userId: Int,
     `type`: EventType,

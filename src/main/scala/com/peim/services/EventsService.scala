@@ -7,7 +7,7 @@ import zio._
 
 object EventsService {
 
-  class Service(eventsDao: EventsDao.Service) {
+  case class Service(eventsDao: EventsDao.Service) {
     def findEvent(eventId: String): Task[EventEntity] = {
       eventsDao.find(eventId)
     }
@@ -27,7 +27,7 @@ object EventsService {
 
   val live: ZLayer[EventsDao.Service, Throwable, EventsService.Service] =
     ZManaged.service[EventsDao.Service]
-      .flatMap(dao => ZManaged.succeed(new Service(dao)))
+      .flatMap(dao => ZManaged.succeed(Service(dao)))
       .toLayer
 
   def findEvent(eventId: String): ZIO[Service, Throwable, EventEntity] =
