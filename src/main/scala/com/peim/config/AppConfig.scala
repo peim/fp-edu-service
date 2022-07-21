@@ -6,7 +6,7 @@ import zio._
 
 final case class AppConfig(httpConfig: HttpServerConfig, dbConfig: DbConfig)
 
-object AppConfig extends zio.Accessible[AppConfig] {
+object AppConfig {
 
   implicit val configReader: ConfigReader[AppConfig] = deriveReader
 

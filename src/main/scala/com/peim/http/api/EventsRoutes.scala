@@ -1,5 +1,6 @@
 package com.peim.http.api
 
+import com.peim.Main.Environment
 import com.peim.errors.{ServiceError, ServiceErrors}
 import com.peim.models.api.in.CreateEvent
 import com.peim.models.tables.EventEntity
@@ -25,35 +26,35 @@ object EventsRoutes {
     query[Option[Int]]("take").and(query[Option[Int]]("skip"))
       .map(input => Paging.of(input._1, input._2))(paging => (Some(paging.take), Some(paging.skip)))
 
-  private val getEventByIdEndpoint = endpoint.get
+  private val getEventByIdEndpoint: ZServerEndpoint[Environment, Any] = endpoint.get
     .in("events" / "get")
     .in(eventIdParam)
     .out(jsonBody[EventEntity])
     .errorOut(jsonBody[ServiceError])
     .zServerLogic(id => EventsService.findEvent(id).mapError(err => ServiceErrors.internalError(err.getMessage)))
 
-  private val getEventsByUserEndpoint = endpoint.get
+  private val getEventsByUserEndpoint: ZServerEndpoint[Environment, Any] = endpoint.get
     .in("events" / "getByUser")
     .in(userIdParam)
     .out(jsonBody[List[EventEntity]])
     .errorOut(jsonBody[ServiceError])
     .zServerLogic(userId => EventsService.findEventByUser(userId).mapError(err => ServiceErrors.internalError(err.getMessage)))
 
-  private val listEventsEndpoint = endpoint.get
+  private val listEventsEndpoint: ZServerEndpoint[Environment, Any] = endpoint.get
     .in("events" / "list")
     .in(paging)
     .out(jsonBody[List[EventEntity]])
     .errorOut(jsonBody[ServiceError])
     .zServerLogic(paging => EventsService.listEvents(paging.take, paging.skip).mapError(err => ServiceErrors.internalError(err.getMessage)))
 
-  private val createEventEndpoint = endpoint.post
+  private val createEventEndpoint: ZServerEndpoint[Environment, Any] = endpoint.post
     .in("events" / "create")
     .in(jsonBody[CreateEvent])
     .out(jsonBody[String])
     .errorOut(jsonBody[ServiceError])
     .zServerLogic(event => EventsService.createEvent(event).mapError(err => ServiceErrors.internalError(err.getMessage)))
 
-  val endpoints: List[ZServerEndpoint[EventsService.Service, Any]] = List(
+  val endpoints: List[ZServerEndpoint[Environment, Any]] = List(
     getEventByIdEndpoint,
     getEventsByUserEndpoint,
     listEventsEndpoint,

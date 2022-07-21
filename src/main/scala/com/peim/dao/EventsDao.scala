@@ -2,7 +2,7 @@ package com.peim.dao
 
 import com.peim.models.api.in.CreateEvent
 import com.peim.models.tables.EventEntity
-import zio.{Task, ZLayer}
+import zio._
 
 object EventsDao {
 
@@ -13,7 +13,7 @@ object EventsDao {
     def list(skip: Int, take: Int): Task[List[EventEntity]]
   }
 
-  val live: ZLayer[Any, Nothing, EventsDao.Service] = ZLayer.succeed(new Service {
+  final case class ServiceImpl(/*xa: H2Transactor[Task]*/) extends Service {
     override def create(event: CreateEvent): Task[String] = ???
 
     override def find(id: String): Task[EventEntity] = ???
@@ -21,5 +21,11 @@ object EventsDao {
     override def findByUser(userId: Int): Task[List[EventEntity]] = ???
 
     override def list(skip: Int, take: Int): Task[List[EventEntity]] = ???
-  })
+  }
+
+  val live: ZLayer[Any, Nothing, EventsDao.Service] = {
+    ZLayer {
+      ZIO.succeed(ServiceImpl())
+    }
+  }
 }

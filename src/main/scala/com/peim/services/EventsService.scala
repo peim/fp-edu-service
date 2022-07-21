@@ -1,5 +1,6 @@
 package com.peim.services
 
+import com.peim.clients.NotifyService
 import com.peim.dao.EventsDao
 import com.peim.models.api.in.CreateEvent
 import com.peim.models.tables.EventEntity
@@ -7,7 +8,7 @@ import zio._
 
 object EventsService {
 
-  case class Service(eventsDao: EventsDao.Service) {
+  final case class Service(eventsDao: EventsDao.Service, notifyService: NotifyService.Service) {
     def findEvent(eventId: String): Task[EventEntity] = {
       eventsDao.find(eventId)
     }
@@ -25,10 +26,15 @@ object EventsService {
     }
   }
 
-  val live: ZLayer[EventsDao.Service, Throwable, EventsService.Service] =
-    ZManaged.service[EventsDao.Service]
-      .flatMap(dao => ZManaged.succeed(Service(dao)))
-      .toLayer
+  val live: ZLayer[EventsDao.Service with NotifyService.Service, Throwable, EventsService.Service] = {
+    ZLayer {
+      for {
+        eventsDao <- ZIO.service[EventsDao.Service]
+        notifyService <- ZIO.service[NotifyService.Service]
+        service = Service(eventsDao, notifyService)
+      } yield service
+    }
+  }
 
   def findEvent(eventId: String): ZIO[Service, Throwable, EventEntity] =
     ZIO.serviceWithZIO[EventsService.Service](_.findEvent(eventId))
