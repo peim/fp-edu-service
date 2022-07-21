@@ -4,7 +4,7 @@ import cats.syntax.all._
 import com.comcast.ip4s._
 import com.peim.clients.NotifyService
 import com.peim.config.AppConfig
-import com.peim.dao.EventsDao
+import com.peim.dao.{Database, EventsDao}
 import com.peim.http.api.EventsRoutes
 import com.peim.services.EventsService
 import org.http4s.HttpRoutes
@@ -27,7 +27,7 @@ object Main extends ZIOApp {
     Scope.default,
     ZLayer.succeed(Clock.ClockLive),
     AppConfig.live,
-//    Database.live,
+    Database.live,
     EventsDao.live,
     AsyncHttpClientZioBackend.layer(),
     NotifyService.live,
